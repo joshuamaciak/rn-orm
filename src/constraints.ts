@@ -16,10 +16,6 @@ export interface TableConstraint extends Constraint {
  *    PRIMARY KEY (columnNames)
  */
 export interface PrimaryKeyTableConstraint extends TableConstraint {
-  /** The table the foreign column(s) belongs to. */
-  foreignTableName: string;
-  /** The foreign column(s) that are referenced by this constraint. */
-  foreignColumnNames: string[];
   // TODO: add support for conflict clauses.
 }
 
@@ -56,7 +52,7 @@ enum ColumnConstraintType {
   FOREIGN_KEY = 'FOREIGN KEY',
 }
 /** A collection of possible table constraints in SQL. */
-enum TableConstraintType {
+export enum TableConstraintType {
   PRIMARY_KEY = 'PRIMARY KEY',
   FOREIGN_KEY = 'FOREIGN KEY',
   UNIQUE = 'UNIQUE',
@@ -64,45 +60,31 @@ enum TableConstraintType {
 }
 
 /** Converts a TableConstraint to its equivalent SQL representation. */
-export function convertTableConstraintToSql(
-  constraint: TableConstraint,
-): string {
+export function convertTableConstraintToSql(constraint: TableConstraint): string {
   switch (constraint.type) {
     case TableConstraintType.PRIMARY_KEY:
-      return convertPrimaryKeyTableConstraintToSql(
-        constraint as PrimaryKeyTableConstraint,
-      );
+      return convertPrimaryKeyTableConstraintToSql(constraint as PrimaryKeyTableConstraint);
     case TableConstraintType.FOREIGN_KEY:
-      return convertForeignKeyTableConstraintToSql(
-        constraint as ForeignKeyTableConstraint,
-      );
+      return convertForeignKeyTableConstraintToSql(constraint as ForeignKeyTableConstraint);
     case TableConstraintType.UNIQUE:
-      return convertUniqueTableConstraintToSql(
-        constraint as UniqueTableConstraint,
-      );
+      return convertUniqueTableConstraintToSql(constraint as UniqueTableConstraint);
     // TODO: add support for CHECK table constraint.
     default:
       throw new Error(`Unrecognized TableConstraintType: ${constraint.type}`);
   }
 }
 
-function convertPrimaryKeyTableConstraintToSql(
-  constraint: PrimaryKeyTableConstraint,
-): string {
+function convertPrimaryKeyTableConstraintToSql(constraint: PrimaryKeyTableConstraint): string {
   const columnNames = constraint.columnNames.join(',');
   return `${constraint.type} (${columnNames})`;
 }
 
-function convertUniqueTableConstraintToSql(
-  constraint: UniqueTableConstraint,
-): string {
+function convertUniqueTableConstraintToSql(constraint: UniqueTableConstraint): string {
   const columnNames = constraint.columnNames.join(',');
   return `${constraint.type} (${columnNames})`;
 }
 
-function convertForeignKeyTableConstraintToSql(
-  constraint: ForeignKeyTableConstraint,
-): string {
+function convertForeignKeyTableConstraintToSql(constraint: ForeignKeyTableConstraint): string {
   const columnNames = constraint.columnNames.join(',');
   const foreignColumNames = constraint.foreignColumnNames.join(',');
   return `${constraint.type} (${columnNames}) REFERENCES ${constraint.foreignTableName} (${foreignColumNames})`;
