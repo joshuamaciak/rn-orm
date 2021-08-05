@@ -1,0 +1,28 @@
+{
+  "name": "rn-orm",
+  "version": "0.1.0",
+  "description": "An ORM for React Native built around react-native-sqlite-storage.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joshuamaciak/rn-orm.git"
+  },
+  "author": "Joshua Maciak",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/joshuamaciak/rn-orm/issues"
+  },
+  "homepage": "https://github.com/joshuamaciak/rn-orm#readme",
+  "devDependencies": {
+    "@types/jest": "^26.0.24",
+    "@types/node": "^16.4.12",
+    "jest": "^27.0.6",
+    "prettier": "^2.3.2",
+    "ts-jest": "^27.0.4",
+    "tslint": "^6.1.3",
+    "typescript": "^3.8.3"
+  }
+}
