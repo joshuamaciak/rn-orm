@@ -27,16 +27,6 @@ function generateCreateTableSqlForModel(
   return `CREATE TABLE IF NOT EXISTS ${name} (${defs})`;
 }
 
-/** Converts a Column to its equivalent SQL definition. */
-function convertColumnToSql(column: Column, columnConstraints: ColumnConstraint[]): string {
-  const strParts = [`${column.name} ${column.type}`];
-  const constraints = columnConstraints.filter(c => c.columnName === column.name);
-  for (const c of constraints) {
-    strParts.push(` ${c.type}`);
-  }
-  return strParts.join('');
-}
-
 interface Column {
   name: string;
   type: string;

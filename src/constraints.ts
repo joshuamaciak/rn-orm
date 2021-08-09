@@ -41,8 +41,38 @@ export interface ColumnConstraint extends Constraint {
   columnName: string;
 }
 
+export interface PrimaryKeyColumnConstraint extends ColumnConstraint {
+  ordering?: Ordering;
+  // TODO: add support for conflict clauses.
+  autoincrement?: boolean;
+}
+
+export interface NotNullColumnConstraint extends ColumnConstraint {
+  // TODO: add support for conflict clauses.
+}
+
+export interface UniqueColumnConstraint extends ColumnConstraint {
+  // TODO: add support for conflict clauses.
+}
+
+export interface DefaultColumnConstraint<V> extends ColumnConstraint {
+  valueType: ValueType;
+  value: V;
+}
+
+export enum ValueType {
+  LITERAL,
+  SIGNED_NUMBER,
+  EXPRESSION,
+}
+
+export enum Ordering {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}
+
 /** A collection of possible column constraints in SQL. */
-enum ColumnConstraintType {
+export enum ColumnConstraintType {
   PRIMARY_KEY = 'PRIMARY KEY',
   NOT_NULL = 'NOT NULL',
   UNIQUE = 'UNIQUE',
@@ -57,6 +87,54 @@ export enum TableConstraintType {
   FOREIGN_KEY = 'FOREIGN KEY',
   UNIQUE = 'UNIQUE',
   CHECK = 'CHECK',
+}
+
+export function convertColumnConstraintToSql(constraint: ColumnConstraint): string {
+  switch (constraint.type) {
+    case ColumnConstraintType.PRIMARY_KEY:
+      return convertPrimaryKeyColumnConstraintToSql(constraint as PrimaryKeyColumnConstraint);
+    case ColumnConstraintType.NOT_NULL:
+      return convertNotNullColumnConstraintToSql(constraint as PrimaryKeyColumnConstraint);
+    case ColumnConstraintType.UNIQUE:
+      return convertUniqueColumnConstraintToSql(constraint as UniqueColumnConstraint);
+    case ColumnConstraintType.DEFAULT:
+      return convertDefaultColumnConstraintToSql(constraint as DefaultColumnConstraint<any>);
+    default:
+      // TODO: add support for additional constraints
+      throw new Error(`Unrecognized ColumnConstraintType: ${constraint.type}`);
+  }
+}
+
+function convertPrimaryKeyColumnConstraintToSql(constraint: PrimaryKeyColumnConstraint): string {
+  const ordering = constraint.ordering ? ` ${constraint.ordering}` : '';
+  const autoincrement = constraint.autoincrement ? ' AUTOINCREMENT' : '';
+  return `${constraint.type}${ordering}${autoincrement}`;
+}
+
+function convertNotNullColumnConstraintToSql(constraint: NotNullColumnConstraint): string {
+  return `${constraint.type}`;
+}
+
+function convertUniqueColumnConstraintToSql(constraint: UniqueColumnConstraint): string {
+  return `${constraint.type}`;
+}
+
+function convertDefaultColumnConstraintToSql(constraint: DefaultColumnConstraint<any>): string {
+  const value = convertValueTypeToSql(constraint.valueType, constraint.value);
+  return `${constraint.type} ${value}`;
+}
+
+function convertValueTypeToSql(valueType: ValueType, value: any): string {
+  switch (valueType) {
+    case ValueType.LITERAL:
+      return `"${value}"`;
+    case ValueType.SIGNED_NUMBER:
+      return `${value}`;
+    case ValueType.EXPRESSION:
+      return `(${value})`;
+    default:
+      throw new Error(`Unrecognized ValueType: ${valueType}`);
+  }
 }
 
 /** Converts a TableConstraint to its equivalent SQL representation. */
