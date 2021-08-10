@@ -42,6 +42,7 @@ export interface ColumnConstraint extends Constraint {
 }
 
 export interface PrimaryKeyColumnConstraint extends ColumnConstraint {
+  type: ColumnConstraintType.PRIMARY_KEY
   ordering?: Ordering;
   // TODO: add support for conflict clauses.
   autoincrement?: boolean;

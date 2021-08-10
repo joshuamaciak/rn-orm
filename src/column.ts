@@ -1,4 +1,4 @@
-import {ColumnConstraint} from './constraints';
+import {ColumnConstraint, convertColumnConstraintToSql} from './constraints';
 
 /** Converts a Column to its equivalent SQL definition. */
 export function convertColumnToSql(
@@ -7,26 +7,32 @@ export function convertColumnToSql(
   columnConstraints: ColumnConstraint[],
 ): string {
   const typeSql = convertColumnTypeToSql(type);
-  const constraints = columnConstraints.join(' ');
-  return `${name} ${typeSql} ${constraints}`;
+  const constraints = columnConstraints.map(c => convertColumnConstraintToSql(c)).join(' ');
+  if (constraints.length > 0) {
+    return `${name} ${typeSql} ${constraints}`;
+  }
+
+  return `${name} ${typeSql}`;
 }
 
 function convertColumnTypeToSql(type: ColumnType): string {
-  if (!type.args.length) {
-    return `${type}`;
+  if (COLUMN_TYPE_SINGLE_ARGUMENT.includes(type.name)) {
+    return `${type.name}(${type.args[0]})`;
   }
-
-  return `${type}(${type.args.join(',')})`;
+  if (COLUMN_TYPE_DOUBLE_ARGUMENT.includes(type.name)) {
+    return `${type.name}(${type.args.join(',')})`;
+  }
+  return `${type.name}`;
 }
 
 /** An interface that describes a ColumnType */
-interface ColumnType {
+export interface ColumnType {
   name: ColumnTypeName;
   args: number[];
 }
 
 /** A collection of possible ColumnTypeNames. */
-enum ColumnTypeName {
+export enum ColumnTypeName {
   INT = 'INT',
   INTEGER = 'INTEGER',
   TINY_INT = 'TINYINT',
@@ -55,3 +61,14 @@ enum ColumnTypeName {
   DATE = 'DATE',
   DATETIME = 'DATETIME',
 }
+
+const COLUMN_TYPE_SINGLE_ARGUMENT = [
+  ColumnTypeName.CHARACTER,
+  ColumnTypeName.VARCHAR,
+  ColumnTypeName.VARYING_CHARACTER,
+  ColumnTypeName.NCHAR,
+  ColumnTypeName.NATIVE_CHARACTER,
+  ColumnTypeName.NVARCHAR,
+];
+
+const COLUMN_TYPE_DOUBLE_ARGUMENT = [ColumnTypeName.DECIMAL];
