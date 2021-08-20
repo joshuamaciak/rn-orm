@@ -1,5 +1,5 @@
 import {ColumnTypeName} from '../column';
-import {Column, Database, Entity, getColumn} from './decorators';
+import {Column, Database, Entity} from './decorators';
 
 @Entity({name: 'book'})
 class Book {
@@ -23,7 +23,7 @@ describe('@Column', () => {
   });
 });
 
-describe('@Entity', () => {
+describe.only('@Entity', () => {
     test('should store entity in entity manager', () => {
 
     });
