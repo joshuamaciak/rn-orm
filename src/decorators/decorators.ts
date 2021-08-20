@@ -6,7 +6,7 @@ import {ENTITY_MANAGER} from '../entity-manager';
  * Borrowing the Type interface from Angular:
  * https://github.com/angular/angular/blob/6.1.6/packages/core/src/type.ts
  **/
- export interface Type<T> extends Function {
+export interface Type<T> extends Function {
   new (...args: any[]): T;
 }
 
@@ -42,7 +42,8 @@ export function Entity(config: EntityConfig): ClassDecorator {
 export function Column(config: ColumnConfig): PropertyDecorator {
   console.log('column decorator', config);
   return target => {
-    const columns: ColumnConfig[] = Reflect.getMetadata(METADATA_KEY_COLUMNS, target.constructor) ?? [];
+    const columns: ColumnConfig[] =
+      Reflect.getMetadata(METADATA_KEY_COLUMNS, target.constructor) ?? [];
     columns.push(config);
     Reflect.defineMetadata('columns', columns, target.constructor);
   };
