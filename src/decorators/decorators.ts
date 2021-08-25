@@ -5,7 +5,7 @@ import {ENTITY_MANAGER} from '../entity-manager';
 /**
  * Borrowing the Type interface from Angular:
  * https://github.com/angular/angular/blob/6.1.6/packages/core/src/type.ts
- **/
+ */
 export interface Type<T> extends Function {
   new (...args: any[]): T;
 }
@@ -15,7 +15,7 @@ const METADATA_KEY_COLUMNS = 'columns';
 
 interface DatabaseConfig {
   name: string;
-  verison: string;
+  version: string;
   entities: Type<any>[];
 }
 
@@ -30,43 +30,35 @@ interface ColumnConfig {
   type: ColumnTypeName;
 }
 
+// TODO: Add support for adding constraint-like decorators (PrimaryKey, Unique, etc)
+
+/**
+ * An Entity decorator factory. This decorator should be attached to
+ * any class that is going to be persisted by the ORM.
+ */
 export function Entity(config: EntityConfig): ClassDecorator {
-  console.log('Entity decorator');
   return target => {
     Reflect.defineMetadata(METADATA_KEY_ENTITY, config, target);
-    const columns = Reflect.getMetadata(METADATA_KEY_COLUMNS, target);
-    console.log('entity constructor', columns);
   };
 }
 
 export function Column(config: ColumnConfig): PropertyDecorator {
-  console.log('column decorator', config);
   return target => {
     const columns: ColumnConfig[] =
       Reflect.getMetadata(METADATA_KEY_COLUMNS, target.constructor) ?? [];
     columns.push(config);
-    Reflect.defineMetadata('columns', columns, target.constructor);
+    Reflect.defineMetadata(METADATA_KEY_COLUMNS, columns, target.constructor);
   };
 }
 
-export function getColumn(target: any, propertyKey: string): ColumnConfig {
-  return Reflect.getMetadata('column', target, propertyKey);
+export function getColumns(target: any): ColumnConfig[] {
+  return Reflect.getMetadata(METADATA_KEY_COLUMNS, target.constructor);
 }
 
-export function Database(config: DatabaseConfig) {
-  const entities = config.entities;
-  console.log(entities);
-  const e = entities[0];
-  const meta = Reflect.getMetadata(METADATA_KEY_ENTITY, e);
-  const col = Reflect.getMetadata(METADATA_KEY_COLUMNS, e);
-  console.log(meta);
-  console.log(col);
-  // console.log('keys', Reflect.getMetadataKeys(meta));
+export function getEntity(target: any): ColumnConfig[] {
+  return Reflect.getMetadata(METADATA_KEY_ENTITY, target.constructor);
+}
 
-  // for each entity
-  // get table name
-  // get columns
-  // build table if doesn't exist
-  //
+export function Database(config: DatabaseConfig): ClassDecorator {
   return (constructor: Function) => {};
 }

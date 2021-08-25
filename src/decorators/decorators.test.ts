@@ -1,5 +1,5 @@
 import {ColumnTypeName} from '../column';
-import {Column, Database, Entity} from './decorators';
+import {Column, Database, Entity, getColumns, getEntity} from './decorators';
 
 @Entity({name: 'book'})
 class Book {
@@ -9,22 +9,26 @@ class Book {
   author: string;
 }
 
-@Database({name: 'nb', verison: '1', entities: [Book]})
-class JoshDB {
-
-}
-
+@Database({name: 'nb', version: '1', entities: [Book]})
+class JoshDB {}
 
 describe('@Column', () => {
-  test('should store ColumnConfig as property metadata', () => {
-    // const b = new Book();
-    // const config = getColumn(b, 'title');
-    // expect(config).toEqual({name: 'title', type: ColumnTypeName.TEXT});
+  test('should store ColumnConfigs as metadata', () => {
+    const b = new Book();
+
+    const configs = getColumns(b);
+    expect(configs).toEqual([
+      {name: 'title', type: ColumnTypeName.TEXT},
+      {name: 'author', type: ColumnTypeName.TEXT},
+    ]);
   });
 });
 
-describe.only('@Entity', () => {
-    test('should store entity in entity manager', () => {
+describe('@Entity', () => {
+  test('should store EntityConfig as metadata', () => {
+    const b = new Book();
 
-    });
+    const config = getEntity(b);
+    expect(config).toEqual({name: 'book'});
+  });
 });
