@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import {ColumnTypeName} from '../column';
+import {ColumnType, ColumnTypeName} from '../column';
 import {ENTITY_MANAGER} from '../entity-manager';
 
 /**
@@ -10,6 +10,7 @@ export interface Type<T> extends Function {
   new (...args: any[]): T;
 }
 
+const METADATA_KEY_DATABASE = 'database';
 const METADATA_KEY_ENTITY = 'entity';
 const METADATA_KEY_COLUMNS = 'columns';
 
@@ -19,15 +20,15 @@ interface DatabaseConfig {
   entities: Type<any>[];
 }
 
-interface EntityConfig {
+export interface EntityConfig {
   /** A unique identifier for this Entity. Defaults to the class name. */
   id?: string;
   name?: string;
 }
 
-interface ColumnConfig {
+export interface ColumnConfig {
   name: string;
-  type: ColumnTypeName;
+  type?: ColumnType;
 }
 
 // TODO: Add support for adding constraint-like decorators (PrimaryKey, Unique, etc)
@@ -43,22 +44,59 @@ export function Entity(config: EntityConfig): ClassDecorator {
 }
 
 export function Column(config: ColumnConfig): PropertyDecorator {
-  return target => {
-    const columns: ColumnConfig[] =
-      Reflect.getMetadata(METADATA_KEY_COLUMNS, target.constructor) ?? [];
-    columns.push(config);
-    Reflect.defineMetadata(METADATA_KEY_COLUMNS, columns, target.constructor);
+  return (target, propertyKey) => {
+    if (!config.type) {
+      const propertyType = Reflect.getMetadata('design:type', target, propertyKey);
+      config.type = inferColumnType(propertyType.name);
+    }
+
+    addColumnConfigToMetadata(config, target);
   };
+}
+
+function addColumnConfigToMetadata(config: ColumnConfig, target: any): void {
+  const columns: ColumnConfig[] =
+    Reflect.getMetadata(METADATA_KEY_COLUMNS, target.constructor) ?? [];
+  columns.push(config);
+  Reflect.defineMetadata(METADATA_KEY_COLUMNS, columns, target.constructor);
 }
 
 export function getColumns(target: any): ColumnConfig[] {
   return Reflect.getMetadata(METADATA_KEY_COLUMNS, target.constructor);
 }
 
-export function getEntity(target: any): ColumnConfig[] {
+export function getColumnsFromClass(target: Type<any>): ColumnConfig[] {
+  return Reflect.getMetadata(METADATA_KEY_COLUMNS, target);
+}
+
+export function getEntityConfig(target: any): EntityConfig {
   return Reflect.getMetadata(METADATA_KEY_ENTITY, target.constructor);
 }
 
+export function getEntityConfigFromClass(target: Type<any>): EntityConfig {
+  return Reflect.getMetadata(METADATA_KEY_ENTITY, target);
+}
+
+export function getDatabaseConfig(target: any): DatabaseConfig {
+  return Reflect.getMetadata(METADATA_KEY_DATABASE, target.constructor);
+}
+
 export function Database(config: DatabaseConfig): ClassDecorator {
-  return (constructor: Function) => {};
+  return target => {
+    Reflect.defineMetadata(METADATA_KEY_DATABASE, config, target);
+  };
+}
+
+/** Tries to infer a ColumnType from the provided type. */
+function inferColumnType(type: string): ColumnType {
+  switch (type) {
+    case Number.name:
+      return {name: ColumnTypeName.INTEGER, args: []};
+    case String.name:
+      return {name: ColumnTypeName.TEXT, args: []};
+    case Boolean.name:
+      return {name: ColumnTypeName.BOOLEAN, args: []};
+    default:
+      throw new Error(`Unable to infer ColumnType from provided type ${type}`);
+  }
 }
