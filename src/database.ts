@@ -3,6 +3,7 @@ import {
   ColumnConfig,
   EntityConfig,
   getColumnsFromClass,
+  getConstraintConfigsFromClass,
   getDatabaseConfig,
   getEntityConfigFromClass,
 } from './decorators/decorators';
@@ -23,14 +24,16 @@ export class AbstractDatabase {
     for (const e of dbConfig.entities) {
       const entityConfig = getEntityConfigFromClass(e);
       const cols = getColumnsFromClass(e);
-
+      const constraintConfigs = getConstraintConfigsFromClass(e);
       console.log(`${e.name}`, cols);
+      console.log('constraints', constraintConfigs);
     }
   }
 
   add(entity: any) {}
 
   createTableIfNotExists(entityConfig: EntityConfig, columnConfigs: ColumnConfig[]) {
+    // TODO add constraints
     const columnDefs: Column[] = columnConfigs.map(
       c => ({name: c.name, type: undefined, constraints: []} as Column),
     );
