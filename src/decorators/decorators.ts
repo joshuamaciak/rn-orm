@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import {ColumnType, ColumnTypeName} from '../column';
+import {ColumnConstraintType, TableConstraintType} from '../constraints';
 import {ENTITY_MANAGER} from '../entity-manager';
 
 /**
@@ -13,6 +14,7 @@ export interface Type<T> extends Function {
 const METADATA_KEY_DATABASE = 'database';
 const METADATA_KEY_ENTITY = 'entity';
 const METADATA_KEY_COLUMNS = 'columns';
+const METADATA_KEY_CONSTRAINTS = 'constraints';
 
 interface DatabaseConfig {
   name: string;
@@ -21,14 +23,18 @@ interface DatabaseConfig {
 }
 
 export interface EntityConfig {
-  /** A unique identifier for this Entity. Defaults to the class name. */
-  id?: string;
   name?: string;
 }
 
 export interface ColumnConfig {
-  name: string;
+  name?: string;
   type?: ColumnType;
+}
+
+interface ConstraintConfig {
+  type: ColumnConstraintType | TableConstraintType;
+  columnName: string;
+  args: any[];
 }
 
 // TODO: Add support for adding constraint-like decorators (PrimaryKey, Unique, etc)
@@ -43,15 +49,70 @@ export function Entity(config: EntityConfig): ClassDecorator {
   };
 }
 
-export function Column(config: ColumnConfig): PropertyDecorator {
+export function Column(config?: ColumnConfig): PropertyDecorator {
   return (target, propertyKey) => {
-    if (!config.type) {
+    const columnConfig = config ?? {};
+    if (!columnConfig.name) {
+      columnConfig.name = propertyKey.toString();
+    }
+    if (!columnConfig.type) {
       const propertyType = Reflect.getMetadata('design:type', target, propertyKey);
-      config.type = inferColumnType(propertyType.name);
+      columnConfig.type = inferColumnType(propertyType.name);
     }
 
-    addColumnConfigToMetadata(config, target);
+    addColumnConfigToMetadata(columnConfig, target);
   };
+}
+
+export function PrimaryKey(): PropertyDecorator {
+  return (target, propertyKey) => {
+    const config = {
+      type: ColumnConstraintType.PRIMARY_KEY,
+      columnName: propertyKey.toString(),
+      args: [],
+    };
+    addConstraintConfigToMetadata(config, target);
+  };
+}
+
+export function NotNull(): PropertyDecorator {
+  return (target, propertyKey) => {
+    const config = {
+      type: ColumnConstraintType.NOT_NULL,
+      columnName: propertyKey.toString(),
+      args: [],
+    };
+    addConstraintConfigToMetadata(config, target);
+  };
+}
+
+export function Unique(): PropertyDecorator {
+  return (target, propertyKey) => {
+    const config = {
+      type: ColumnConstraintType.UNIQUE,
+      columnName: propertyKey.toString(),
+      args: [],
+    };
+    addConstraintConfigToMetadata(config, target);
+  };
+}
+
+export function Default(expression: string): PropertyDecorator {
+  return (target, propertyKey) => {
+    const config = {
+      type: ColumnConstraintType.DEFAULT,
+      columnName: propertyKey.toString(),
+      args: [expression],
+    };
+    addConstraintConfigToMetadata(config, target);
+  };
+}
+
+function addConstraintConfigToMetadata(config: ConstraintConfig, target: any): void {
+  const constraints: ConstraintConfig[] =
+    Reflect.getMetadata(METADATA_KEY_CONSTRAINTS, target.constructor) ?? [];
+  constraints.push(config);
+  Reflect.defineMetadata(METADATA_KEY_CONSTRAINTS, constraints, target.constructor);
 }
 
 function addColumnConfigToMetadata(config: ColumnConfig, target: any): void {
@@ -59,6 +120,14 @@ function addColumnConfigToMetadata(config: ColumnConfig, target: any): void {
     Reflect.getMetadata(METADATA_KEY_COLUMNS, target.constructor) ?? [];
   columns.push(config);
   Reflect.defineMetadata(METADATA_KEY_COLUMNS, columns, target.constructor);
+}
+
+export function getConstraintConfigs(target: any): ConstraintConfig[] {
+  return Reflect.getMetadata(METADATA_KEY_CONSTRAINTS, target.constructor);
+}
+
+export function getConstraintConfigsFromClass(target: Type<any>): ConstraintConfig[] {
+  return Reflect.getMetadata(METADATA_KEY_CONSTRAINTS, target);
 }
 
 export function getColumns(target: any): ColumnConfig[] {
