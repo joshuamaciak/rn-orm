@@ -13,6 +13,20 @@ class Orm {
   }
 }
 
+function generateCreateTableSqlForModel(
+  name: string,
+  columns: Column[],
+  columnConstraints: ColumnConstraint[],
+  tableConstraints: TableConstraint[],
+): string {
+  const columnDefinitionsSqls = columns.map(c => convertColumnToSql(c, columnConstraints));
+  const tableConstraintSqls = tableConstraints.map(t => convertTableConstraintToSql(t));
+
+  const defs = [...columnDefinitionsSqls, ...tableConstraintSqls].join(',');
+
+  return `CREATE TABLE IF NOT EXISTS ${name} (${defs})`;
+}
+
 interface Column {
   name: string;
   type: string;
