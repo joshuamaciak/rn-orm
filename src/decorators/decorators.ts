@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import {ColumnType, ColumnTypeName} from '../column';
-import {ColumnConstraintType, TableConstraintType} from '../constraints';
+import {ColumnConstraintType, ForeignKeyTableConstraint, TableConstraintType} from '../constraints';
 import {ENTITY_MANAGER} from '../entity-manager';
 
 /**
@@ -14,7 +14,7 @@ export interface Type<T> extends Function {
 const METADATA_KEY_DATABASE = 'database';
 const METADATA_KEY_ENTITY = 'entity';
 const METADATA_KEY_COLUMNS = 'columns';
-const METADATA_KEY_CONSTRAINTS = 'constraints';
+const METADATA_KEY_COLUMN_CONSTRAINTS = 'columnConstraints';
 
 interface DatabaseConfig {
   name: string;
@@ -22,8 +22,28 @@ interface DatabaseConfig {
   entities: Type<any>[];
 }
 
+/**
+ * EntityConfig is where you define info about the Entity/Table mapping. This is
+ * also where table constraints are defined.
+ */
 export interface EntityConfig {
   name?: string;
+  primaryKeys?: string[];
+  foreignKeys?: ForeignKeyConfig[];
+}
+
+/**
+ * A ForeignKeyConfig is used to define FOREIGN KEY table constraints. If you are
+ * not defining a composite foreign key, you can also use the @ForeignKey property
+ * decorator.
+ */
+export interface ForeignKeyConfig {
+  /** The columns that this constraint is applied to. */
+  columnNames: string[];
+  /** The foreign Entity that this key is referencing. */
+  foreignEntity: Type<any>;
+  /** The columns on the foreign Entity that this key is referencing. */
+  foreignColumnNames: string[];
 }
 
 export interface ColumnConfig {
@@ -31,8 +51,8 @@ export interface ColumnConfig {
   type?: ColumnType;
 }
 
-interface ConstraintConfig {
-  type: ColumnConstraintType | TableConstraintType;
+export interface ColumnConstraintConfig {
+  type: ColumnConstraintType;
   columnName: string;
   args: any[];
 }
@@ -108,11 +128,11 @@ export function Default(expression: string): PropertyDecorator {
   };
 }
 
-function addConstraintConfigToMetadata(config: ConstraintConfig, target: any): void {
-  const constraints: ConstraintConfig[] =
-    Reflect.getMetadata(METADATA_KEY_CONSTRAINTS, target.constructor) ?? [];
+function addConstraintConfigToMetadata(config: ColumnConstraintConfig, target: any): void {
+  const constraints: ColumnConstraintConfig[] =
+    Reflect.getMetadata(METADATA_KEY_COLUMN_CONSTRAINTS, target.constructor) ?? [];
   constraints.push(config);
-  Reflect.defineMetadata(METADATA_KEY_CONSTRAINTS, constraints, target.constructor);
+  Reflect.defineMetadata(METADATA_KEY_COLUMN_CONSTRAINTS, constraints, target.constructor);
 }
 
 function addColumnConfigToMetadata(config: ColumnConfig, target: any): void {
@@ -122,12 +142,12 @@ function addColumnConfigToMetadata(config: ColumnConfig, target: any): void {
   Reflect.defineMetadata(METADATA_KEY_COLUMNS, columns, target.constructor);
 }
 
-export function getConstraintConfigs(target: any): ConstraintConfig[] {
-  return Reflect.getMetadata(METADATA_KEY_CONSTRAINTS, target.constructor);
+export function getColumnConstraintConfigs(target: any): ColumnConstraintConfig[] {
+  return Reflect.getMetadata(METADATA_KEY_COLUMN_CONSTRAINTS, target.constructor);
 }
 
-export function getConstraintConfigsFromClass(target: Type<any>): ConstraintConfig[] {
-  return Reflect.getMetadata(METADATA_KEY_CONSTRAINTS, target);
+export function getColumnConstraintConfigsFromClass(target: Type<any>): ColumnConstraintConfig[] {
+  return Reflect.getMetadata(METADATA_KEY_COLUMN_CONSTRAINTS, target);
 }
 
 export function getColumns(target: any): ColumnConfig[] {

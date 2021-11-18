@@ -42,7 +42,7 @@ export interface ColumnConstraint extends Constraint {
 }
 
 export interface PrimaryKeyColumnConstraint extends ColumnConstraint {
-  type: ColumnConstraintType.PRIMARY_KEY
+  type: ColumnConstraintType.PRIMARY_KEY;
   ordering?: Ordering;
   // TODO: add support for conflict clauses.
   autoincrement?: boolean;
@@ -103,6 +103,32 @@ export function convertColumnConstraintToSql(constraint: ColumnConstraint): stri
     default:
       // TODO: add support for additional constraints
       throw new Error(`Unrecognized ColumnConstraintType: ${constraint.type}`);
+  }
+}
+
+export class ColumnConstraintFactory {
+  static primaryKey(
+    columnName: string,
+    autoincrement?: boolean,
+    ordering?: Ordering,
+  ): PrimaryKeyColumnConstraint {
+    return {type: ColumnConstraintType.PRIMARY_KEY, columnName, autoincrement, ordering};
+  }
+
+  static notNull(columnName: string): NotNullColumnConstraint {
+    return {type: ColumnConstraintType.NOT_NULL, columnName};
+  }
+
+  static unique(columnName: string): UniqueColumnConstraint {
+    return {type: ColumnConstraintType.UNIQUE, columnName};
+  }
+
+  static default<T>(
+    columnName: string,
+    valueType: ValueType,
+    value: T,
+  ): DefaultColumnConstraint<T> {
+    return {type: ColumnConstraintType.DEFAULT, columnName, valueType, value};
   }
 }
 

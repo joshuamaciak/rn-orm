@@ -5,7 +5,7 @@ import {
   Default,
   Entity,
   getColumns,
-  getConstraintConfigs,
+  getColumnConstraintConfigs,
   getEntityConfig,
   NotNull,
   PrimaryKey,
@@ -78,20 +78,20 @@ describe('decorators', () => {
       @Entity({name: 'test'})
       class Test {}
       const config = getEntityConfig(new Test());
-      expect(config).toEqual({name: 'book'});
+      expect(config).toEqual({name: 'test'});
     });
   });
 
   describe('constraints', () => {
     describe('@PrimaryKey', () => {
-      it('should store primary key ConstraintConfig as metadata', () => {
+      it('should store primary key ColumnConstraintConfig as metadata', () => {
         class Test {
           @Column({})
           @PrimaryKey()
           prop: boolean;
         }
 
-        const configs = getConstraintConfigs(new Test());
+        const configs = getColumnConstraintConfigs(new Test());
         expect(configs).toEqual([
           {type: ColumnConstraintType.PRIMARY_KEY, columnName: 'prop', args: []},
         ]);
@@ -99,14 +99,14 @@ describe('decorators', () => {
     });
 
     describe('@NotNull', () => {
-      it('should store not null ConstraintConfig as metadata', () => {
+      it('should store not null ColumnConstraintConfig as metadata', () => {
         class Test {
           @Column({})
           @NotNull()
           prop: boolean;
         }
 
-        const configs = getConstraintConfigs(new Test());
+        const configs = getColumnConstraintConfigs(new Test());
         expect(configs).toEqual([
           {type: ColumnConstraintType.NOT_NULL, columnName: 'prop', args: []},
         ]);
@@ -114,14 +114,14 @@ describe('decorators', () => {
     });
 
     describe('@Unique', () => {
-      it('should store unique ConstraintConfig as metadata', () => {
+      it('should store unique ColumnConstraintConfig as metadata', () => {
         class Test {
           @Column({})
           @Unique()
           prop: boolean;
         }
 
-        const configs = getConstraintConfigs(new Test());
+        const configs = getColumnConstraintConfigs(new Test());
         expect(configs).toEqual([
           {type: ColumnConstraintType.UNIQUE, columnName: 'prop', args: []},
         ]);
@@ -129,14 +129,14 @@ describe('decorators', () => {
     });
 
     describe('@Default', () => {
-      it('should store default ConstraintConfig as metadata', () => {
+      it('should store default ColumnConstraintConfig as metadata', () => {
         class Test {
           @Column({})
           @Default('true')
           prop: boolean;
         }
 
-        const configs = getConstraintConfigs(new Test());
+        const configs = getColumnConstraintConfigs(new Test());
         expect(configs).toEqual([
           {type: ColumnConstraintType.DEFAULT, columnName: 'prop', args: ['true']},
         ]);
