@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import {ColumnType, ColumnTypeName} from '../column';
-import {ColumnConstraintType, ForeignKeyTableConstraint, TableConstraintType} from '../constraints';
+import {ColumnConstraintType, ForeignKeyTableConstraint, TableConstraintType} from '../constraints/constraints';
 import {ENTITY_MANAGER} from '../entity-manager';
 
 /**

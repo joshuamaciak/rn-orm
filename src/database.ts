@@ -7,7 +7,7 @@ import {
   TableConstraint,
   TableConstraintType,
   ValueType,
-} from './constraints';
+} from './constraints/constraints';
 import {
   ColumnConfig,
   ColumnConstraintConfig,
@@ -50,7 +50,7 @@ export class AbstractDatabase {
     tableConstraints: TableConstraint[],
     columnConstraints: ColumnConstraint[],
   ) {
-    // TODO: implement create table 
+    // TODO: implement create table
   }
 }
 

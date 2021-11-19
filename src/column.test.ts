@@ -1,5 +1,5 @@
 import {ColumnTypeName, convertColumnToSql} from './column';
-import {ColumnConstraintType, PrimaryKeyColumnConstraint} from './constraints';
+import {ColumnConstraintType, PrimaryKeyColumnConstraint} from './constraints/constraints';
 
 describe('convertColumnToSql', () => {
   describe('column type', () => {

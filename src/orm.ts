@@ -1,4 +1,4 @@
-import {ColumnConstraint, convertTableConstraintToSql, TableConstraint} from './constraints';
+import {ColumnConstraint, convertTableConstraintToSql, TableConstraint} from './constraints/constraints';
 import {PersistenceManager} from './persistence-manager';
 
 class Orm {

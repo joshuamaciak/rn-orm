@@ -1,5 +1,5 @@
 import {Column, convertColumnToSql} from './column';
-import {convertTableConstraintToSql, TableConstraint} from './constraints';
+import {convertTableConstraintToSql, TableConstraint} from './constraints/constraints';
 
 export interface Table {
   name: string;

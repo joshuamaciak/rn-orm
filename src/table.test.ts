@@ -4,7 +4,7 @@ import {
   NotNullColumnConstraint,
   PrimaryKeyColumnConstraint,
   TableConstraintType,
-} from './constraints';
+} from './constraints/constraints';
 import {convertTableToSql, Table} from './table';
 
 describe('convertTableToSql', () => {

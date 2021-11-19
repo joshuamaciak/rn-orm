@@ -1,5 +1,5 @@
 import {ColumnTypeName} from '../column';
-import {ColumnConstraintType} from '../constraints';
+import {ColumnConstraintType} from '../constraints/constraints';
 import {
   Column,
   Default,
