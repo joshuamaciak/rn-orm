@@ -8,16 +8,13 @@ import {
   TableConstraintType,
   ValueType,
 } from './constraints/constraints';
+import {ColumnConfig, getColumnsFromClass} from './decorators/column';
 import {
-  ColumnConfig,
   ColumnConstraintConfig,
-  EntityConfig,
-  getColumnsFromClass,
   getColumnConstraintConfigsFromClass,
-  getDatabaseConfig,
-  getEntityConfigFromClass,
-  ForeignKeyConfig,
-} from './decorators/decorators';
+} from './decorators/constraints/constraint-util';
+import {getDatabaseConfig} from './decorators/constraints/database';
+import {EntityConfig, ForeignKeyConfig, getEntityConfigFromClass} from './decorators/entity';
 
 /**
  * This is a temporary construct until I can build out support for
