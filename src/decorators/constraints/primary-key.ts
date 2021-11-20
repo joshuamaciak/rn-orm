@@ -1,4 +1,4 @@
-import {ColumnConstraintType} from '../../constraints/constraints';
+import {ColumnConstraintType} from '../../constraints/column/column-constraint';
 import {addConstraintConfigToMetadata} from './constraint-util';
 
 export function PrimaryKey(): PropertyDecorator {

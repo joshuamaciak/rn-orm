@@ -1,4 +1,4 @@
-import {ColumnConstraintType} from '../../constraints/constraints';
+import {ColumnConstraintType} from '../../constraints/column/column-constraint';
 import {Column} from '../column';
 import {getColumnConstraintConfigs} from './constraint-util';
 import {Default} from './default';

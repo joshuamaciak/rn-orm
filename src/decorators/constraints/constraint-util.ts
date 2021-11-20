@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import {ColumnConstraintType} from '../../constraints/constraints';
+import {ColumnConstraintType} from '../../constraints/column/column-constraint';
 import {Type} from '../decorator-util';
 
 const METADATA_KEY_COLUMN_CONSTRAINTS = 'columnConstraints';

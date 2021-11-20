@@ -2,12 +2,11 @@ import {
   ColumnConstraint,
   ColumnConstraintFactory,
   ColumnConstraintType,
-  ForeignKeyTableConstraint,
-  PrimaryKeyTableConstraint,
-  TableConstraint,
-  TableConstraintType,
-  ValueType,
-} from './constraints/constraints';
+} from './constraints/column/column-constraint';
+import {ValueType} from './constraints/column/default';
+import {ForeignKeyTableConstraint} from './constraints/table/foreign-key';
+import {PrimaryKeyTableConstraint} from './constraints/table/primary-key';
+import {TableConstraint, TableConstraintType} from './constraints/table/table-constraint';
 import {ColumnConfig, getColumnsFromClass} from './decorators/column';
 import {
   ColumnConstraintConfig,
