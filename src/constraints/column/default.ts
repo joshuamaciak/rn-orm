@@ -11,9 +11,21 @@ export enum ValueType {
   EXPRESSION,
 }
 
-export function convertDefaultColumnConstraintToSql(constraint: DefaultColumnConstraint<any>): string {
+export function convertDefaultColumnConstraintToSql(
+  constraint: DefaultColumnConstraint<any>,
+): string {
   const value = convertValueTypeToSql(constraint.valueType, constraint.value);
   return `${constraint.type} ${value}`;
+}
+
+export function inferValueType(arg: any): ValueType {
+  switch (typeof arg) {
+    case 'string':
+      // TODO: we need a way to distinguish between literals & expressions.
+      return ValueType.LITERAL;
+    case 'number':
+      return ValueType.SIGNED_NUMBER;
+  }
 }
 
 function convertValueTypeToSql(valueType: ValueType, value: any): string {

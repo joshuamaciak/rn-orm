@@ -1,6 +1,15 @@
+import {EntityConfig} from '../../decorators/entity';
 import {Constraint} from '../constraint';
-import {convertForeignKeyTableConstraintToSql, ForeignKeyTableConstraint} from './foreign-key';
-import {convertPrimaryKeyTableConstraintToSql, PrimaryKeyTableConstraint} from './primary-key';
+import {
+  convertForeignKeyTableConstraintToSql,
+  createForeignKeyTableConstraint,
+  ForeignKeyTableConstraint,
+} from './foreign-key';
+import {
+  convertPrimaryKeyTableConstraintToSql,
+  createPrimaryKeyTableConstraint,
+  PrimaryKeyTableConstraint,
+} from './primary-key';
 import {convertUniqueTableConstraintToSql, UniqueTableConstraint} from './unique';
 
 /** A TableConstraint represents a constraint on a SQL table. */
@@ -32,4 +41,18 @@ export function convertTableConstraintToSql(constraint: TableConstraint): string
     default:
       throw new Error(`Unrecognized TableConstraintType: ${constraint.type}`);
   }
+}
+
+/** Creates well-defined table constraints from the config provided by the @Entity decorator. */
+export function createTableConstraints(entityConfig: EntityConfig): TableConstraint[] {
+  const constraints = [];
+  if (entityConfig.primaryKeys?.length) {
+    constraints.push(createPrimaryKeyTableConstraint(entityConfig.primaryKeys));
+  }
+
+  const foreignKeyConstraints = entityConfig.foreignKeys.map(f =>
+    createForeignKeyTableConstraint(f),
+  );
+  constraints.push(foreignKeyConstraints);
+  return constraints;
 }

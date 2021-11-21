@@ -1,5 +1,11 @@
+import {ColumnConstraintConfig} from '../../decorators/constraints/constraint-util';
 import {Constraint} from '../constraint';
-import {convertDefaultColumnConstraintToSql, DefaultColumnConstraint, ValueType} from './default';
+import {
+  convertDefaultColumnConstraintToSql,
+  DefaultColumnConstraint,
+  inferValueType,
+  ValueType,
+} from './default';
 import {convertNotNullColumnConstraintToSql, NotNullColumnConstraint} from './not-null';
 import {
   convertPrimaryKeyColumnConstraintToSql,
@@ -63,5 +69,27 @@ export function convertColumnConstraintToSql(constraint: ColumnConstraint): stri
     default:
       // TODO: add support for additional constraints
       throw new Error(`Unrecognized ColumnConstraintType: ${constraint.type}`);
+  }
+}
+
+export function createColumnConstraints(
+  constraintConfigs: ColumnConstraintConfig[],
+): ColumnConstraint[] {
+  return constraintConfigs.map(c => createColumnConstraint(c));
+}
+
+function createColumnConstraint(config: ColumnConstraintConfig): ColumnConstraint {
+  switch (config.type) {
+    case ColumnConstraintType.PRIMARY_KEY:
+      return ColumnConstraintFactory.primaryKey(config.columnName);
+    case ColumnConstraintType.NOT_NULL:
+      return ColumnConstraintFactory.notNull(config.columnName);
+    case ColumnConstraintType.UNIQUE:
+      return ColumnConstraintFactory.unique(config.columnName);
+    case ColumnConstraintType.DEFAULT:
+      const value = config.args[0];
+      return ColumnConstraintFactory.default(config.columnName, inferValueType(value), value);
+    default:
+      throw new Error(`Unrecognized constraint type ${config.type}`);
   }
 }
