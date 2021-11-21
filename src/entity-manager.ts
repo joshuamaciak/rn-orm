@@ -1,9 +1,9 @@
-import {Column} from './column';
+import {ColumnDefinition} from './sql/column';
 
 class EntityInfo {
   id?: string;
   name?: string;
-  columns?: Column[];
+  columns?: ColumnDefinition[];
 }
 
 class EntityManager {

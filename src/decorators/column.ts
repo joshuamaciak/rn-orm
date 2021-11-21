@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import {ColumnType, ColumnTypeName} from '../column';
+import {ColumnType, ColumnTypeName} from '../sql/column';
 import {Type} from './decorator-util';
 
 const METADATA_KEY_COLUMNS = 'columns';

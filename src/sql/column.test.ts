@@ -1,8 +1,8 @@
-import {ColumnTypeName, convertColumnToSql} from './column';
-import {ColumnConstraintType} from './constraints/column/column-constraint';
-import {PrimaryKeyColumnConstraint} from './constraints/column/primary-key';
+import {ColumnTypeName, convertColumnDefinitionToSql} from './column';
+import {ColumnConstraintType} from '../constraints/column/column-constraint';
+import {PrimaryKeyColumnConstraint} from '../constraints/column/primary-key';
 
-describe('convertColumnToSql', () => {
+describe('convertColumnDefinitionToSql', () => {
   describe('column type', () => {
     it('should not have arguments when ColumnType does not have any', () => {
       const column = {
@@ -14,7 +14,7 @@ describe('convertColumnToSql', () => {
         constraints: [],
       };
 
-      const result = convertColumnToSql(column);
+      const result = convertColumnDefinitionToSql(column);
 
       expect(result).toBe(`${column.name} INTEGER`);
     });
@@ -29,7 +29,7 @@ describe('convertColumnToSql', () => {
         constraints: [],
       };
 
-      const result = convertColumnToSql(column);
+      const result = convertColumnDefinitionToSql(column);
 
       expect(result).toBe(`${column.name} VARCHAR(123)`);
     });
@@ -44,7 +44,7 @@ describe('convertColumnToSql', () => {
         constraints: [],
       };
 
-      const result = convertColumnToSql(column);
+      const result = convertColumnDefinitionToSql(column);
 
       expect(result).toBe(`${column.name} DECIMAL(2,5)`);
     });
@@ -66,7 +66,7 @@ describe('convertColumnToSql', () => {
         constraints: [constraint],
       };
 
-      const result = convertColumnToSql(column);
+      const result = convertColumnDefinitionToSql(column);
 
       expect(result).toBe(`${columnName} INTEGER PRIMARY KEY`);
     });
@@ -92,7 +92,7 @@ describe('convertColumnToSql', () => {
         constraints,
       };
 
-      const result = convertColumnToSql(column);
+      const result = convertColumnDefinitionToSql(column);
 
       expect(result).toBe(`${columnName} INTEGER PRIMARY KEY NOT NULL`);
     });
