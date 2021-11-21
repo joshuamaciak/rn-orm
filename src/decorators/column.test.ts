@@ -1,4 +1,4 @@
-import {ColumnTypeName} from '../column';
+import {ColumnTypeName} from '../sql/column';
 import {Column, getColumns} from './column';
 
 describe('@Column', () => {

@@ -1,16 +1,16 @@
 import {
   ColumnConstraint,
   convertColumnConstraintToSql,
-} from './constraints/column/column-constraint';
+} from '../constraints/column/column-constraint';
 
-export interface Column {
+export interface ColumnDefinition {
   name: string;
   type: ColumnType;
   constraints: ColumnConstraint[];
 }
 
 /** Converts a Column to its equivalent SQL definition. */
-export function convertColumnToSql(column: Column): string {
+export function convertColumnDefinitionToSql(column: ColumnDefinition): string {
   const typeSql = convertColumnTypeToSql(column.type);
   const constraints = column.constraints.map(c => convertColumnConstraintToSql(c)).join(' ');
   if (constraints.length > 0) {
