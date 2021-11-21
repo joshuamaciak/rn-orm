@@ -1,9 +1,10 @@
 import {ColumnTypeName, convertColumnToSql} from './column';
-import {ColumnConstraintType, PrimaryKeyColumnConstraint} from './constraints';
+import {ColumnConstraintType} from './constraints/column/column-constraint';
+import {PrimaryKeyColumnConstraint} from './constraints/column/primary-key';
 
 describe('convertColumnToSql', () => {
   describe('column type', () => {
-    test('should not have arguments when ColumnType does not have any', () => {
+    it('should not have arguments when ColumnType does not have any', () => {
       const column = {
         name: 'col',
         type: {
@@ -18,7 +19,7 @@ describe('convertColumnToSql', () => {
       expect(result).toBe(`${column.name} INTEGER`);
     });
 
-    test('should have one argument when ColumnType requires one argument', () => {
+    it('should have one argument when ColumnType requires one argument', () => {
       const column = {
         name: 'col',
         type: {
@@ -33,7 +34,7 @@ describe('convertColumnToSql', () => {
       expect(result).toBe(`${column.name} VARCHAR(123)`);
     });
 
-    test('should have two arguments when ColumnType requires two arguments', () => {
+    it('should have two arguments when ColumnType requires two arguments', () => {
       const column = {
         name: 'col',
         type: {
@@ -50,7 +51,7 @@ describe('convertColumnToSql', () => {
   });
 
   describe('column constraints', () => {
-    test('should contain column constraint when one is provided', () => {
+    it('should contain column constraint when one is provided', () => {
       const columnName = 'col';
       const constraint: PrimaryKeyColumnConstraint = {
         type: ColumnConstraintType.PRIMARY_KEY,
@@ -70,7 +71,7 @@ describe('convertColumnToSql', () => {
       expect(result).toBe(`${columnName} INTEGER PRIMARY KEY`);
     });
 
-    test('should contain column constraints when multiple are provided', () => {
+    it('should contain column constraints when multiple are provided', () => {
       const columnName = 'col';
       const constraints = [
         {

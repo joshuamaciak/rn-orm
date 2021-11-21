@@ -1,4 +1,7 @@
-import {ColumnConstraint, convertColumnConstraintToSql} from './constraints';
+import {
+  ColumnConstraint,
+  convertColumnConstraintToSql,
+} from './constraints/column/column-constraint';
 
 export interface Column {
   name: string;

@@ -1,15 +1,12 @@
 import {ColumnTypeName} from './column';
-import {
-  ColumnConstraintType,
-  NotNullColumnConstraint,
-  PrimaryKeyColumnConstraint,
-  TableConstraintType,
-} from './constraints';
+import {ColumnConstraintType} from './constraints/column/column-constraint';
+import {NotNullColumnConstraint} from './constraints/column/not-null';
+import {TableConstraintType} from './constraints/table/table-constraint';
 import {convertTableToSql, Table} from './table';
 
 describe('convertTableToSql', () => {
   describe('table name', () => {
-    test('should include table name', () => {
+    it('should include table name', () => {
       const table: Table = {
         name: 'table',
         columns: [{name: 'col', type: {name: ColumnTypeName.INTEGER, args: []}, constraints: []}],
@@ -21,7 +18,7 @@ describe('convertTableToSql', () => {
       expect(result).toBe('CREATE TABLE IF NOT EXISTS table (col INTEGER)');
     });
 
-    test('should include fully qualified table name when schemaName is present', () => {
+    it('should include fully qualified table name when schemaName is present', () => {
       const table: Table = {
         name: 'table',
         schemaName: 'schema',
@@ -36,7 +33,7 @@ describe('convertTableToSql', () => {
   });
 
   describe('columns', () => {
-    test('should separate multiple columns by comma', () => {
+    it('should separate multiple columns by comma', () => {
       const table: Table = {
         name: 'table',
         columns: [
@@ -55,7 +52,7 @@ describe('convertTableToSql', () => {
   });
 
   describe('table constraint', () => {
-    test('should list table constraint after columns', () => {
+    it('should list table constraint after columns', () => {
       const table: Table = {
         name: 'table',
         columns: [
@@ -80,7 +77,7 @@ describe('convertTableToSql', () => {
       );
     });
 
-    test('should separate multiple table constraints by commas', () => {
+    it('should separate multiple table constraints by commas', () => {
       const table: Table = {
         name: 'table',
         columns: [
